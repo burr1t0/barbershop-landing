@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IRONCLAD — Barbershop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --black:#0a0a0a;
+  --dark:#111111;
+  --card:#181818;
+  --border:#2a2a2a;
+  --gold:#c9a84c;
+  --gold-light:#e8c876;
+  --gold-dim:#8a6f2e;
+  --white:#f5f0e8;
+  --gray:#888880;
+  --font-display:'Bebas Neue',sans-serif;
+  --font-serif:'Playfair Display',serif;
+  --font-body:'Barlow',sans-serif;
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:var(--font-body);font-weight:300;overflow-x:hidden}
+
+/* SCROLL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-50px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(50px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.stagger .reveal:nth-child(1){transition-delay:0s}
+.stagger .reveal:nth-child(2){transition-delay:0.1s}
+.stagger .reveal:nth-child(3){transition-delay:0.2s}
+.stagger .reveal:nth-child(4){transition-delay:0.3s}
+.stagger .reveal:nth-child(5){transition-delay:0.4s}
+.stagger .reveal:nth-child(6){transition-delay:0.5s}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 5%;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(10,10,10,0.95),transparent);backdrop-filter:blur(8px)}
+.nav-logo{font-family:var(--font-display);font-size:1.8rem;letter-spacing:0.15em;color:var(--gold);text-decoration:none}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--gray);text-decoration:none;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.2s}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{background:transparent;border:1px solid var(--gold);color:var(--gold);padding:0.5rem 1.4rem;font-family:var(--font-body);font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:all 0.25s}
+.nav-cta:hover{background:var(--gold);color:var(--black)}
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.burger span{display:block;width:24px;height:1.5px;background:var(--gold);transition:all 0.3s}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .burger{display:flex}
+  .mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,10,10,0.97);z-index:99;flex-direction:column;justify-content:center;align-items:center;gap:2.5rem}
+  .mobile-menu.open{display:flex}
+  .mobile-menu a{color:var(--white);text-decoration:none;font-family:var(--font-display);font-size:2.5rem;letter-spacing:0.1em}
+  .mobile-menu a:hover{color:var(--gold)}
+}
+
+/* HERO */
+#hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:
+  repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(201,168,76,0.04) 60px),
+  repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(201,168,76,0.04) 60px);
+  z-index:0}
+.hero-noise{position:absolute;inset:0;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");z-index:0}
+.hero-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(10,10,10,0.8) 100%);z-index:1}
+.hero-content{position:relative;z-index:2;padding:0 5%;max-width:900px}
+.hero-tag{font-size:0.75rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
+.hero-tag::before{content:'';display:block;width:40px;height:1px;background:var(--gold)}
+.hero-title{font-family:var(--font-display);font-size:clamp(5rem,14vw,12rem);line-height:0.9;letter-spacing:0.02em;color:var(--white);margin-bottom:0.5rem}
+.hero-title span{color:var(--gold);display:block}
+.hero-subtitle{font-family:var(--font-serif);font-style:italic;font-size:clamp(1rem,2.5vw,1.5rem);color:var(--gray);margin:1.5rem 0 3rem;max-width:500px;line-height:1.6}
+.hero-buttons{display:flex;gap:1rem;flex-wrap:wrap}
+.btn-primary{background:var(--gold);color:var(--black);border:none;padding:1rem 2.5rem;font-family:var(--font-body);font-size:0.8rem;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.25s;text-decoration:none;display:inline-block}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--border);padding:1rem 2.5rem;font-family:var(--font-body);font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.25s;text-decoration:none;display:inline-block}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.hero-scroll{position:absolute;bottom:3rem;left:5%;z-index:2;display:flex;align-items:center;gap:1rem;color:var(--gray);font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;animation:pulse 2s infinite}
+.hero-scroll::after{content:'';display:block;width:1px;height:40px;background:var(--gold-dim)}
+@keyframes pulse{0%,100%{opacity:0.5}50%{opacity:1}}
+.hero-year{position:absolute;right:5%;bottom:3rem;z-index:2;font-family:var(--font-display);font-size:0.9rem;letter-spacing:0.3em;color:var(--border)}
+
+/* SECTION SHARED */
+section{padding:6rem 5%}
+.section-label{display:flex;align-items:center;gap:1.2rem;margin-bottom:1rem}
+.section-label span{font-size:0.7rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold)}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);max-width:60px}
+.section-title{font-family:var(--font-display);font-size:clamp(2.5rem,6vw,5rem);letter-spacing:0.05em;line-height:1;margin-bottom:0.5rem}
+.section-desc{color:var(--gray);font-size:0.95rem;line-height:1.7;max-width:480px;margin-bottom:3.5rem}
+
+/* SERVICES */
+#services{background:var(--dark)}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--border)}
+.service-card{background:var(--dark);padding:2.5rem;position:relative;overflow:hidden;transition:background 0.3s;cursor:default}
+.service-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;background:var(--gold);transition:height 0.4s ease}
+.service-card:hover{background:#161616}
+.service-card:hover::before{height:100%}
+.service-num{font-family:var(--font-display);font-size:0.8rem;letter-spacing:0.2em;color:var(--gold-dim);margin-bottom:1.2rem}
+.service-name{font-family:var(--font-serif);font-size:1.3rem;margin-bottom:0.8rem;transition:color 0.3s}
+.service-card:hover .service-name{color:var(--gold)}
+.service-desc{font-size:0.85rem;color:var(--gray);line-height:1.6;margin-bottom:1.5rem}
+.service-price{font-family:var(--font-display);font-size:2rem;letter-spacing:0.05em;color:var(--white)}
+.service-price span{font-size:0.9rem;color:var(--gray);font-family:var(--font-body)}
+
+/* MASTERS */
+#masters{background:var(--black)}
+.masters-header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:4rem}
+.masters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem}
+.master-card{position:relative;overflow:hidden}
+.master-photo{aspect-ratio:3/4;background:var(--card);position:relative;overflow:hidden;margin-bottom:1.5rem}
+.master-photo-inner{width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center;position:relative}
+.master-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem}
+.master-avatar{width:80px;height:80px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:2rem;color:var(--gold);border:2px solid var(--gold-dim)}
+.master-silhouette{position:absolute;bottom:0;left:50%;transform:translateX(-50%);opacity:0.08}
+.master-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,10,0.9) 0%,transparent 60%);opacity:0;transition:opacity 0.3s}
+.master-card:hover .master-overlay{opacity:1}
+.master-tag{display:inline-block;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-dim);padding:0.3rem 0.8rem;margin-bottom:0.8rem}
+.master-name{font-family:var(--font-serif);font-size:1.4rem;margin-bottom:0.4rem}
+.master-spec{font-size:0.85rem;color:var(--gray)}
+.master-exp{font-size:0.8rem;color:var(--gold-dim);margin-top:0.4rem}
+.master-photo-label{position:absolute;top:1rem;right:1rem;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gray);background:rgba(10,10,10,0.7);padding:0.3rem 0.6rem}
+
+/* ADVANTAGES */
+#advantages{background:var(--dark);position:relative;overflow:hidden}
+.adv-bg-text{position:absolute;bottom:-2rem;right:-1rem;font-family:var(--font-display);font-size:20vw;color:rgba(201,168,76,0.03);line-height:1;pointer-events:none;white-space:nowrap}
+.advantages-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:3rem;position:relative;z-index:1}
+.adv-card{padding:2rem 0}
+.adv-icon{width:48px;height:48px;margin-bottom:1.5rem;color:var(--gold)}
+.adv-icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.5}
+.adv-title{font-family:var(--font-serif);font-size:1.2rem;margin-bottom:0.8rem}
+.adv-text{font-size:0.85rem;color:var(--gray);line-height:1.7}
+.adv-num{font-family:var(--font-display);font-size:3rem;color:var(--border);margin-bottom:0.8rem;line-height:1}
+
+/* REVIEWS */
+#reviews{background:var(--black)}
+.reviews-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem}
+.review-card{background:var(--card);padding:2.5rem;position:relative;border-bottom:2px solid transparent;transition:border-color 0.3s}
+.review-card:hover{border-bottom-color:var(--gold)}
+.review-quote{font-family:var(--font-display);font-size:4rem;color:var(--gold-dim);line-height:0.5;margin-bottom:1.5rem;display:block}
+.review-text{font-family:var(--font-serif);font-style:italic;font-size:1rem;line-height:1.7;color:var(--white);margin-bottom:2rem}
+.review-author{display:flex;align-items:center;gap:1rem}
+.review-avatar{width:40px;height:40px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1rem;color:var(--gold)}
+.review-name{font-size:0.85rem;font-weight:500;margin-bottom:0.2rem}
+.review-stars{color:var(--gold);font-size:0.7rem;letter-spacing:0.1em}
+
+/* BOOKING */
+#booking{background:var(--dark);position:relative}
+.booking-wrapper{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+@media(max-width:768px){.booking-wrapper{grid-template-columns:1fr;gap:3rem}}
+.booking-info h2{font-family:var(--font-display);font-size:clamp(2.5rem,5vw,4rem);letter-spacing:0.05em;line-height:1;margin-bottom:1.5rem}
+.booking-info p{color:var(--gray);font-size:0.9rem;line-height:1.7;margin-bottom:2rem}
+.booking-detail{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
+.booking-detail-icon{width:32px;height:32px;color:var(--gold);flex-shrink:0}
+.booking-detail-icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.5}
+.booking-detail span{font-size:0.85rem;color:var(--gray)}
+.booking-form{background:var(--card);padding:2.5rem}
+.form-group{margin-bottom:1.5rem}
+.form-label{display:block;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem}
+.form-control{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--white);font-family:var(--font-body);font-size:0.9rem;padding:0.7rem 0;outline:none;transition:border-color 0.3s;appearance:none;-webkit-appearance:none}
+.form-control:focus{border-bottom-color:var(--gold)}
+.form-control option{background:var(--card);color:var(--white)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
+.form-submit{width:100%;margin-top:2rem}
+.form-note{text-align:center;font-size:0.75rem;color:var(--gray);margin-top:1rem}
+
+/* CONTACTS / FOOTER */
+#contacts{background:var(--black);border-top:1px solid var(--border)}
+.contacts-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:4rem;padding-bottom:4rem;border-bottom:1px solid var(--border);margin-bottom:3rem}
+@media(max-width:768px){.contacts-grid{grid-template-columns:1fr;gap:2.5rem}}
+.contacts-brand{font-family:var(--font-display);font-size:3rem;letter-spacing:0.1em;color:var(--gold);margin-bottom:1rem}
+.contacts-tagline{font-family:var(--font-serif);font-style:italic;color:var(--gray);font-size:0.95rem;margin-bottom:1.5rem}
+.contacts-social{display:flex;gap:1rem}
+.social-link{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--gray);text-decoration:none;transition:all 0.2s;font-size:0.75rem}
+.social-link:hover{border-color:var(--gold);color:var(--gold)}
+.contacts-col h4{font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem}
+.contacts-col p,.contacts-col a{font-size:0.85rem;color:var(--gray);line-height:2;text-decoration:none;display:block;transition:color 0.2s}
+.contacts-col a:hover{color:var(--white)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.footer-copy{font-size:0.75rem;color:var(--border)}
+.footer-rights{font-size:0.75rem;color:var(--border)}
+
+/* DIVIDER */
+.gold-line{width:60px;height:1px;background:var(--gold);margin:2rem 0}
+
+/* NOTIFICATION */
+.notification{position:fixed;bottom:2rem;right:2rem;background:var(--gold);color:var(--black);padding:1rem 1.5rem;font-size:0.85rem;font-weight:500;transform:translateX(200%);transition:transform 0.4s ease;z-index:999}
+.notification.show{transform:translateX(0)}
+</style>
+</head>
+<body>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#services" onclick="closeMobile()">Услуги</a>
+  <a href="#masters" onclick="closeMobile()">Мастера</a>
+  <a href="#reviews" onclick="closeMobile()">Отзывы</a>
+  <a href="#booking" onclick="closeMobile()">Записаться</a>
+  <a href="#contacts" onclick="closeMobile()">Контакты</a>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">IRONCLAD</a>
+  <ul class="nav-links">
+    <li><a href="#services">Услуги</a></li>
+    <li><a href="#masters">Мастера</a></li>
+    <li><a href="#advantages">О нас</a></li>
+    <li><a href="#reviews">Отзывы</a></li>
+    <li><a href="#contacts">Контакты</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">Записаться</button>
+  <div class="burger" id="burger" onclick="toggleMobile()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Премиум барбершоп · Москва</div>
+    <h1 class="hero-title">
+      IRON
+      <span>CLAD</span>
+    </h1>
+    <p class="hero-subtitle">Мужской стиль — это не случайность.<br>Это решение, принятое однажды.</p>
+    <div class="hero-buttons">
+      <a href="#booking" class="btn-primary">Записаться</a>
+      <a href="#services" class="btn-outline">Наши услуги</a>
+    </div>
+  </div>
+  <div class="hero-scroll">Скролл</div>
+  <div class="hero-year">EST. 2018</div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-label reveal"><span>02 / Услуги</span></div>
+  <h2 class="section-title reveal">Мастерство<br>в деталях</h2>
+  <p class="section-desc reveal">Каждая услуга — это ритуал. Мы не просто стрижём — мы создаём образ, который работает на вас.</p>
+  <div class="services-grid stagger">
+    <div class="service-card reveal">
+      <div class="service-num">01</div>
+      <div class="service-name">Классическая стрижка</div>
+      <div class="service-desc">Чёткие линии, безупречный контур. Стрижка, которая выглядит идеально на протяжении недель.</div>
+      <div class="service-price">1 500 <span>₽</span></div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">02</div>
+      <div class="service-name">Коррекция бороды</div>
+      <div class="service-desc">Профессиональная обработка прямой бритвой. Горячее полотенце. Финишные масла.</div>
+      <div class="service-price">800 <span>₽</span></div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">03</div>
+      <div class="service-name">Стрижка + Борода</div>
+      <div class="service-desc">Комплексный образ: от причёски до линии подбородка — единый стиль, законченный результат.</div>
+      <div class="service-price">2 100 <span>₽</span></div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">04</div>
+      <div class="service-name">Укладка</div>
+      <div class="service-desc">Профессиональная укладка с подбором средств под ваш тип волос и нужный эффект.</div>
+      <div class="service-price">600 <span>₽</span></div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">05</div>
+      <div class="service-name">Королевское бритьё</div>
+      <div class="service-desc">Ритуал на 45 минут. Горячий компресс, масло, прямая бритва, финишный уход.</div>
+      <div class="service-price">1 200 <span>₽</span></div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">06</div>
+      <div class="service-name">Камуфляж седины</div>
+      <div class="service-desc">Натуральный результат без агрессивной химии. Опытные мастера, проверенные пигменты.</div>
+      <div class="service-price">2 500 <span>₽</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MASTERS -->
+<section id="masters">
+  <div class="masters-header">
+    <div>
+      <div class="section-label reveal"><span>03 / Мастера</span></div>
+      <h2 class="section-title reveal">Люди,<br>которым доверяют</h2>
+    </div>
+    <p class="section-desc reveal" style="margin-bottom:0">Каждый из наших мастеров — это история, школа и точность руки, проверенная годами.</p>
+  </div>
+  <div class="masters-grid stagger">
+    <div class="master-card reveal">
+      <div class="master-photo">
+        <div class="master-placeholder">
+          <div class="master-avatar">АВ</div>
+        </div>
+        <div class="master-photo-label">Фото</div>
+        <div class="master-overlay"></div>
+      </div>
+      <div class="master-tag">Senior Barber</div>
+      <div class="master-name">Алексей Воронов</div>
+      <div class="master-spec">Классика · Фейд · Бритьё</div>
+      <div class="master-exp">10 лет опыта</div>
+    </div>
+    <div class="master-card reveal">
+      <div class="master-photo">
+        <div class="master-placeholder">
+          <div class="master-avatar">МК</div>
+        </div>
+        <div class="master-photo-label">Фото</div>
+        <div class="master-overlay"></div>
+      </div>
+      <div class="master-tag">Master Barber</div>
+      <div class="master-name">Максим Калинин</div>
+      <div class="master-spec">Текстура · Укладка · Борода</div>
+      <div class="master-exp">7 лет опыта</div>
+    </div>
+    <div class="master-card reveal">
+      <div class="master-photo">
+        <div class="master-placeholder">
+          <div class="master-avatar">ДН</div>
+        </div>
+        <div class="master-photo-label">Фото</div>
+        <div class="master-overlay"></div>
+      </div>
+      <div class="master-tag">Barber</div>
+      <div class="master-name">Дмитрий Нечаев</div>
+      <div class="master-spec">Кроп · Скин-фейд · Дизайн</div>
+      <div class="master-exp">5 лет опыта</div>
+    </div>
+  </div>
+</section>
+
+<!-- ADVANTAGES -->
+<section id="advantages">
+  <div class="adv-bg-text">IRON</div>
+  <div class="section-label reveal"><span>04 / Почему мы</span></div>
+  <h2 class="section-title reveal">Принципы,<br>не компромиссы</h2>
+  <div class="gold-line reveal"></div>
+  <div class="advantages-grid stagger">
+    <div class="adv-card reveal">
+      <div class="adv-num">10+</div>
+      <div class="adv-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12M2 7l10 5 10-5"/></svg>
+      </div>
+      <div class="adv-title">Лет опыта</div>
+      <div class="adv-text">Каждый мастер прошёл строгий отбор и продолжает совершенствоваться. Опыт — не слова, а результат.</div>
+    </div>
+    <div class="adv-card reveal">
+      <div class="adv-num">100%</div>
+      <div class="adv-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <div class="adv-title">Качество</div>
+      <div class="adv-text">Только профессиональный инструмент. Только лицензированные средства. Никаких компромиссов.</div>
+    </div>
+    <div class="adv-card reveal">
+      <div class="adv-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="adv-num">—</div>
+      <div class="adv-title">Атмосфера</div>
+      <div class="adv-text">Виски. Хороший звук. Никаких очередей. Место, куда возвращаются не только ради стрижки.</div>
+    </div>
+    <div class="adv-card reveal">
+      <div class="adv-icon">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </div>
+      <div class="adv-num">Pro</div>
+      <div class="adv-title">Материалы</div>
+      <div class="adv-text">Только профессиональная косметика: American Crew, Layrite, Uppercut. Мы знаем, что наносим на ваши волосы.</div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="section-label reveal"><span>05 / Отзывы</span></div>
+  <h2 class="section-title reveal">Говорят<br>клиенты</h2>
+  <p class="section-desc reveal">Лучшая реклама — это когда человек возвращается снова.</p>
+  <div class="reviews-grid stagger">
+    <div class="review-card reveal">
+      <span class="review-quote">"</span>
+      <p class="review-text">Первый раз попал случайно — друг позвал. Теперь хожу только сюда уже три года. Алексей знает мою голову лучше меня самого.</p>
+      <div class="review-author">
+        <div class="review-avatar">СП</div>
+        <div>
+          <div class="review-name">Сергей Петров</div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card reveal">
+      <span class="review-quote">"</span>
+      <p class="review-text">Королевское бритьё — это отдельный вид медитации. Горячее полотенце, неспешность, результат — идеально гладкая кожа. Приезжаю раз в месяц специально.</p>
+      <div class="review-author">
+        <div class="review-avatar">ИВ</div>
+        <div>
+          <div class="review-name">Игорь Васильев</div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+      </div>
+    </div>
+    <div class="review-card reveal">
+      <span class="review-quote">"</span>
+      <p class="review-text">Важное интервью, важный внешний вид. Максим сделал именно то, что я просил — ни больше, ни меньше. Чёткий результат, хорошая беседа, приятная атмосфера.</p>
+      <div class="review-author">
+        <div class="review-avatar">АМ</div>
+        <div>
+          <div class="review-name">Андрей Морозов</div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section id="booking">
+  <div class="booking-wrapper">
+    <div class="booking-info">
+      <div class="section-label reveal"><span>06 / Запись</span></div>
+      <h2 class="reveal">Запишитесь<br>прямо сейчас</h2>
+      <div class="gold-line reveal"></div>
+      <p class="reveal">Выберите мастера, услугу и удобное время. Мы подтвердим запись в течение 15 минут.</p>
+      <div class="booking-detail reveal">
+        <div class="booking-detail-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <span>ул. Тверская, 18, Москва</span>
+      </div>
+      <div class="booking-detail reveal">
+        <div class="booking-detail-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <span>Пн–Пт: 10:00–21:00 · Сб–Вс: 11:00–20:00</span>
+      </div>
+      <div class="booking-detail reveal">
+        <div class="booking-detail-icon">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 11.5a19.79 19.79 0 01-3.07-8.67A2 2 0 013.62 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        </div>
+        <span>+7 (495) 123-45-67</span>
+      </div>
+    </div>
+    <div class="booking-form reveal">
+      <div class="form-group">
+        <label class="form-label">Ваше имя</label>
+        <input type="text" class="form-control" placeholder="Александр">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Телефон</label>
+        <input type="tel" class="form-control" placeholder="+7 (___) ___-__-__">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Мастер</label>
+          <select class="form-control">
+            <option value="">Выбрать мастера</option>
+            <option>Алексей Воронов</option>
+            <option>Максим Калинин</option>
+            <option>Дмитрий Нечаев</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Услуга</label>
+          <select class="form-control">
+            <option value="">Выбрать услугу</option>
+            <option>Классическая стрижка</option>
+            <option>Коррекция бороды</option>
+            <option>Стрижка + Борода</option>
+            <option>Укладка</option>
+            <option>Королевское бритьё</option>
+            <option>Камуфляж седины</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Дата</label>
+          <input type="date" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Время</label>
+          <select class="form-control">
+            <option value="">Время</option>
+            <option>10:00</option><option>11:00</option><option>12:00</option>
+            <option>13:00</option><option>14:00</option><option>15:00</option>
+            <option>16:00</option><option>17:00</option><option>18:00</option>
+            <option>19:00</option><option>20:00</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-primary form-submit" onclick="submitBooking()">Записаться</button>
+      <p class="form-note">Без предоплаты · Отмена за 2 часа</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTS / FOOTER -->
+<section id="contacts">
+  <div class="contacts-grid">
+    <div class="reveal-left">
+      <div class="contacts-brand">IRONCLAD</div>
+      <div class="contacts-tagline">"Точность — это уважение к себе."</div>
+      <div class="contacts-social">
+        <a href="#" class="social-link" aria-label="Instagram">IG</a>
+        <a href="#" class="social-link" aria-label="Telegram">TG</a>
+        <a href="#" class="social-link" aria-label="VK">VK</a>
+      </div>
+    </div>
+    <div class="reveal">
+      <h4>Навигация</h4>
+      <a href="#services">Услуги</a>
+      <a href="#masters">Мастера</a>
+      <a href="#advantages">О нас</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#booking">Записаться</a>
+    </div>
+    <div class="reveal-right">
+      <h4>Контакты</h4>
+      <p>ул. Тверская, 18</p>
+      <p>Москва, 125009</p>
+      <a href="tel:+74951234567">+7 (495) 123-45-67</a>
+      <a href="mailto:hello@ironclad.ru">hello@ironclad.ru</a>
+      <p style="margin-top:0.8rem">Пн–Пт: 10:00–21:00</p>
+      <p>Сб–Вс: 11:00–20:00</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2024 IRONCLAD Barbershop. Все права защищены.</div>
+    <div class="footer-rights">Demo project — portfolio purposes only</div>
+  </div>
+</section>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notification">✓ Заявка отправлена. Ждите звонка!</div>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+
+// Nav scroll effect
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 80) {
+    nav.style.background = 'rgba(10,10,10,0.98)';
+  } else {
+    nav.style.background = 'linear-gradient(to bottom,rgba(10,10,10,0.95),transparent)';
+  }
+});
+
+// Mobile menu
+function toggleMobile() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMobile() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+// Smooth scroll for all anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// Booking submit
+function submitBooking() {
+  const inputs = document.querySelectorAll('.booking-form .form-control');
+  let valid = true;
+  inputs.forEach(i => {
+    if (!i.value.trim()) { i.style.borderBottomColor = '#c9a84c'; valid = false; }
+    else i.style.borderBottomColor = '';
+  });
+  if (!valid) return;
+  const note = document.getElementById('notification');
+  note.classList.add('show');
+  setTimeout(() => note.classList.remove('show'), 4000);
+  inputs.forEach(i => { i.value = ''; i.style.borderBottomColor = ''; });
+}
+
+// Parallax hero text subtle
+window.addEventListener('scroll', () => {
+  const hero = document.querySelector('.hero-content');
+  if (hero) hero.style.transform = `translateY(${window.scrollY * 0.2}px)`;
+});
+
+// Set today as min date for booking
+const dateInput = document.querySelector('input[type="date"]');
+if (dateInput) {
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.min = today;
+  dateInput.value = today;
+}
+</script>
+</body>
+</html>
